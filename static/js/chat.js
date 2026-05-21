@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   scrollMessagesToBottom();
   setupComposerLock();
+  setupMobileSidebar();
   setupCompanionTools();
   setupInlinePlayers();
 });
@@ -47,6 +48,27 @@ function setupComposerLock() {
     if (textarea) {
       textarea.readOnly = true;
     }
+  });
+}
+
+function setupMobileSidebar() {
+  const sidebar = document.querySelector(".sidebar");
+  const openButton = document.querySelector("#mobileMenuButton");
+  const scrim = document.querySelector("#mobileScrim");
+  if (!sidebar || !openButton || !scrim) return;
+
+  const close = () => {
+    sidebar.classList.remove("is-open");
+    scrim.classList.remove("is-visible");
+  };
+
+  openButton.addEventListener("click", () => {
+    sidebar.classList.add("is-open");
+    scrim.classList.add("is-visible");
+  });
+  scrim.addEventListener("click", close);
+  document.querySelectorAll(".conversation-list a").forEach((link) => {
+    link.addEventListener("click", close);
   });
 }
 

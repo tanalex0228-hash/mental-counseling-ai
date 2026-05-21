@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <main class="app-shell">
+  <button type="button" class="mobile-scrim" id="mobileScrim" aria-label="關閉選單"></button>
   <aside class="sidebar">
     <div class="brand">
       <span>AI 心理諮商</span>
@@ -34,8 +35,11 @@
 
   <section class="chat-panel">
     <header class="chat-header">
-      <h1>{{ room.title }}</h1>
-      <p>回應會依規範文件、技能文件、情境分類、RAG 檢索與過往對話產生。</p>
+      <button type="button" class="mobile-menu-button" id="mobileMenuButton" aria-label="開啟對話列表">☰</button>
+      <div>
+        <h1>{{ room.title }}</h1>
+        <p>回應會依規範文件、技能文件、情境分類、RAG 檢索與過往對話產生。</p>
+      </div>
     </header>
 
     <div class="messages">
