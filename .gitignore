@@ -1,0 +1,11 @@
+.env
+db.sqlite3
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv/
+venv/
+media/
+staticfiles/
+user_data/
+vector_store/chroma_db/

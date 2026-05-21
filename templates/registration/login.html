@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="auth-page">
+  <section class="auth-panel">
+    <h1>AI 心理諮商</h1>
+    <p>登入你的私人諮詢空間</p>
+    <form method="post" class="auth-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">登入</button>
+    </form>
+    <a href="{% url 'register' %}">還沒有帳號？註冊</a>
+  </section>
+</main>
+{% endblock %}

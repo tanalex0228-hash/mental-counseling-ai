@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="auth-page">
+  <section class="auth-panel">
+    <h1>建立帳號</h1>
+    <p>註冊後會建立你的使用者資料與聊天資料區。</p>
+    <form method="post" class="auth-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">註冊</button>
+    </form>
+    <a href="{% url 'login' %}">已經有帳號？登入</a>
+  </section>
+</main>
+{% endblock %}

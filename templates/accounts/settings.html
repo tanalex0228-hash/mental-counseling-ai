@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="settings-page">
+  <section class="settings-panel">
+    <header class="settings-header">
+      <a href="{% url 'chat_home' %}">返回聊天</a>
+      <h1>設定</h1>
+    </header>
+
+    {% if messages %}
+      <div class="notice-list">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'update_profile' %}" class="settings-form">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'settings' %}">
+      <h2>個人資料與介面</h2>
+      {{ profile_form.as_p }}
+      <button type="submit">儲存設定</button>
+    </form>
+
+    <form method="post" action="{% url 'change_password' %}" class="settings-form">
+      {% csrf_token %}
+      <h2>修改密碼</h2>
+      {{ password_form.as_p }}
+      <button type="submit">更新密碼</button>
+    </form>
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% load static %}
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 心理諮商</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="theme-{{ profile.preferred_theme_color|default:'teal' }}">
+  {% block content %}{% endblock %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <span>AI 心理諮商</span>
+      <a class="icon-button" href="{% url 'new_conversation' %}" title="新增對話">＋</a>
+    </div>
+    <nav class="conversation-list">
+      {% for item in rooms %}
+        <a class="{% if item.id == room.id %}active{% endif %}" href="{% url 'room' item.id %}">
+          {{ item.title }}
+        </a>
+      {% empty %}
+        <span class="empty">尚無對話</span>
+      {% endfor %}
+    </nav>
+    <form method="post" action="{% url 'update_theme' %}" class="theme-form">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <label for="id_preferred_theme_color">色調</label>
+      {{ theme_form.preferred_theme_color }}
+      <button type="submit">儲存</button>
+    </form>
+    <div class="account-row">
+      <span>{{ request.user.username }}</span>
+      <a href="{% url 'settings' %}">設定</a>
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">登出</button>
+      </form>
+    </div>
+  </aside>
+
+  <section class="chat-panel">
+    <header class="chat-header">
+      <h1>{{ room.title }}</h1>
+      <p>回應會依規範文件、技能文件、情境分類、RAG 檢索與過往對話產生。</p>
+    </header>
+
+    <div class="messages">
+      {% for message in messages_list %}
+        <article class="message {{ message.role }}">
+          <div class="bubble">
+            <span class="role">{{ message.get_role_display }}</span>
+            {% if message.uploaded_file %}
+              <img class="message-image" src="{{ message.uploaded_file.url }}" alt="上傳圖片">
+            {% endif %}
+            <p>{{ message.content|linebreaksbr }}</p>
+            {% for card in message.tool_cards.all %}
+              {% if card.card_type == "youtube" %}
+                <div class="inline-tool-card">
+                  <h3>{{ card.title }}</h3>
+                  <div class="inline-player" data-inline-player>
+                    <span>點下面影片就可以在這裡播放</span>
+                  </div>
+                  <div class="inline-media-list">
+                    {% for video in card.payload.videos %}
+                      <button type="button" class="inline-media-item" data-video-id="{{ video.id }}" data-video-title="{{ video.title }}">
+                        <img src="{{ video.thumbnail }}" alt="">
+                        <span>
+                          <strong>{{ video.title }}</strong>
+                          <small>{{ video.channel }}</small>
+                          <a href="{{ video.url }}" target="_blank" rel="noopener noreferrer">原影片</a>
+                        </span>
+                      </button>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% elif card.card_type == "image_links" %}
+                <div class="inline-tool-card">
+                  <h3>{{ card.title }}</h3>
+                  <div class="inline-link-list">
+                    {% for link in card.payload.links %}
+                      <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+                        <strong>{{ link.label }}</strong>
+                        <small>{{ link.description }}</small>
+                      </a>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </article>
+      {% empty %}
+        <div class="welcome">
+          <h2>今天想先從哪裡開始？</h2>
+          <p>你可以描述一件最近卡住的事，或只是說說現在的感受。</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="composer-wrap">
+      <button type="button" class="tool-rail-button" id="openToolDrawer" title="工具">工具</button>
+      <form method="post" class="composer" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label class="attach-button" title="上傳照片">
+          照片
+          <input type="file" name="attachment" accept="image/*">
+        </label>
+        <textarea name="message" rows="3" placeholder="輸入你的想法..."></textarea>
+        <button type="submit">送出</button>
+      </form>
+    </div>
+  </section>
+
+  <aside class="companion-panel is-collapsed" aria-label="陪伴工具" id="companionPanel">
+    <div class="companion-panel-header">
+      <div>
+        <span class="tool-kicker">陪伴工具</span>
+        <h2 id="toolPanelTitle">工具抽屜</h2>
+      </div>
+      <button type="button" class="panel-toggle" id="collapseTools">收合</button>
+    </div>
+
+    <div class="tool-card">
+      <span class="tool-kicker">工具</span>
+      <h2>選擇你現在需要的功能</h2>
+      <div class="drawer-actions">
+        <button type="button" data-tool-section-button="media">找影片 / 音樂 / 圖片</button>
+        <button type="button" data-tool-section-button="photo">上傳照片給 LLM 看</button>
+      </div>
+    </div>
+
+    <div class="tool-card tool-section active" data-tool-section="media">
+      <div class="tool-header">
+        <div>
+          <span class="tool-kicker">站內小窗</span>
+          <h2>YouTube 搜尋與播放</h2>
+        </div>
+      </div>
+      <div class="youtube-frame" id="youtubeFrame">
+        <span>搜尋影片後，點結果會在這裡播放</span>
+      </div>
+      <div class="youtube-controls">
+        <input id="youtubeQuery" type="search" placeholder="輸入想看的內容，例如 張元英 可愛">
+        <button type="button" id="searchYoutube">搜尋</button>
+      </div>
+      <div class="quick-vibes">
+        <button type="button" data-fill-query="K pop chill playlist">K-pop 放鬆</button>
+        <button type="button" data-fill-query="funny videos">搞笑影片</button>
+      </div>
+      <div class="media-results" id="youtubeResults"></div>
+
+      <div class="companion-search">
+        <h3>圖片與近況</h3>
+        <div class="youtube-controls">
+          <input id="companionQuery" type="search" placeholder="">
+          <button type="button" id="searchCompanion">產生</button>
+        </div>
+        <div class="link-results" id="companionResults"></div>
+      </div>
+    </div>
+
+    <div class="tool-card tool-section" data-tool-section="photo">
+      <span class="tool-kicker">照片理解</span>
+      <h2>直接在輸入框上傳</h2>
+      <p class="tool-copy">點聊天輸入框旁的「照片」，可以上傳合照、截圖或生活照片。LLM 會看圖回覆，但不會辨識真實身分。</p>
+    </div>
+  </aside>
+</main>
+{% endblock %}
+{% block scripts %}
+{% load static %}
+<script src="{% static 'js/chat.js' %}"></script>
+{% endblock %}

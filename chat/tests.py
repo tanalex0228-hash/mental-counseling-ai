@@ -1,0 +1,85 @@
+from django.contrib.auth.models import User
+from django.test import Client, TestCase, override_settings
+from django.urls import reverse
+
+from accounts.models import UserProfile
+
+from .models import ChatMessage, ChatRoom, KnowledgeDocument
+
+
+@override_settings(OPENAI_API_KEY="")
+class ChatFlowTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="student",
+            email="student@example.com",
+            password="strong-test-pass-123",
+        )
+        UserProfile.objects.create(user=self.user, email=self.user.email)
+        KnowledgeDocument.objects.create(
+            title="測試規範",
+            doc_type="policy",
+            tags="安全",
+            content="先同理，再給小步驟。",
+        )
+
+    def test_register_creates_profile(self):
+        response = self.client.post(
+            reverse("register"),
+            {
+                "username": "new_user",
+                "email": "new@example.com",
+                "phone_number": "0912345678",
+                "password1": "complex-test-pass-123",
+                "password2": "complex-test-pass-123",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(UserProfile.objects.filter(user__username="new_user").exists())
+
+    def test_chat_post_saves_messages_and_markdown(self):
+        self.client.login(username="student", password="strong-test-pass-123")
+        response = self.client.post(reverse("chat_home"), {"message": "我最近壓力很大"})
+
+        self.assertEqual(response.status_code, 302)
+        room = ChatRoom.objects.get(user=self.user)
+        self.assertEqual(ChatMessage.objects.filter(room=room).count(), 2)
+        first_message = ChatMessage.objects.filter(room=room).first()
+        self.assertTrue(first_message.markdown_backup_path.endswith(f"{room.id}.md"))
+
+    def test_chat_api_requires_login(self):
+        response = Client().post(
+            reverse("chat_api"),
+            data={"message": "hello"},
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_chat_api_saves_reply(self):
+        self.client.login(username="student", password="strong-test-pass-123")
+        response = self.client.post(
+            reverse("chat_api"),
+            data={"message": "我和伴侶吵架了"},
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(ChatMessage.objects.count(), 2)
+        self.assertIn("answer", response.json())
+
+    def test_settings_update_theme(self):
+        self.client.login(username="student", password="strong-test-pass-123")
+        response = self.client.post(
+            reverse("update_profile"),
+            {
+                "email": "student2@example.com",
+                "phone_number": "0987654321",
+                "preferred_theme_color": "rose",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        profile = UserProfile.objects.get(user=self.user)
+        self.assertEqual(profile.preferred_theme_color, "rose")

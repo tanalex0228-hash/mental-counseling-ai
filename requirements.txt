@@ -1,0 +1,8 @@
+Django>=4.2,<5.0
+djangorestframework>=3.16,<4.0
+python-dotenv>=1.0
+openai>=1.0.0
+chromadb>=1.5,<2.0
+tiktoken>=0.13
+urllib3<2.0
+yt-dlp>=2025.10.14
