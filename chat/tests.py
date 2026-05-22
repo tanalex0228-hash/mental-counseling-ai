@@ -69,17 +69,33 @@ class ChatFlowTests(TestCase):
         self.assertEqual(ChatMessage.objects.count(), 2)
         self.assertIn("answer", response.json())
 
-    def test_settings_update_theme(self):
+    def test_settings_update_profile_and_visual_preferences(self):
         self.client.login(username="student", password="strong-test-pass-123")
         response = self.client.post(
             reverse("update_profile"),
             {
                 "email": "student2@example.com",
                 "phone_number": "0987654321",
-                "preferred_theme_color": "rose",
             },
+        )
+        self.assertEqual(response.status_code, 302)
+
+        response = self.client.post(
+            reverse("update_visual_preferences"),
+            {"preferred_theme_color": "rose"},
         )
 
         self.assertEqual(response.status_code, 302)
         profile = UserProfile.objects.get(user=self.user)
+        self.assertEqual(profile.email, "student2@example.com")
         self.assertEqual(profile.preferred_theme_color, "rose")
+
+    def test_delete_room_only_removes_owned_room(self):
+        self.client.login(username="student", password="strong-test-pass-123")
+        room = ChatRoom.objects.create(user=self.user, title="要刪掉")
+        ChatMessage.objects.create(room=room, user=self.user, role="user", content="測試")
+
+        response = self.client.post(reverse("delete_room", args=[room.id]))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(ChatRoom.objects.filter(id=room.id).exists())

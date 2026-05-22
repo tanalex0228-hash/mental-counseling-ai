@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 <main class="settings-page">
-  <section class="settings-panel">
+  <section class="settings-panel settings-shell">
     <header class="settings-header">
       <a href="{% url 'chat_home' %}">返回聊天</a>
-      <h1>設定</h1>
+      <div>
+        <span class="settings-kicker">Settings</span>
+        <h1>設定中心</h1>
+      </div>
     </header>
 
     {% if messages %}
@@ -15,20 +18,77 @@
       </div>
     {% endif %}
 
-    <form method="post" action="{% url 'update_profile' %}" class="settings-form">
-      {% csrf_token %}
-      <input type="hidden" name="next" value="{% url 'settings' %}">
-      <h2>個人資料與介面</h2>
-      {{ profile_form.as_p }}
-      <button type="submit">儲存設定</button>
-    </form>
+    <div class="settings-layout">
+      <nav class="settings-nav" aria-label="設定選單">
+        <a class="{% if active_tab == 'profile' %}active{% endif %}" href="{% url 'settings_profile' %}">個資設定</a>
+        <a class="{% if active_tab == 'response' %}active{% endif %}" href="{% url 'settings_response' %}">回答偏好</a>
+        <a class="{% if active_tab == 'visual' %}active{% endif %}" href="{% url 'settings_visual' %}">視覺化設定</a>
+        <a class="{% if active_tab == 'advanced' %}active{% endif %}" href="{% url 'settings_advanced' %}">高級設定</a>
+        <a class="{% if active_tab == 'security' %}active{% endif %}" href="{% url 'settings_security' %}">安全與密碼</a>
+      </nav>
 
-    <form method="post" action="{% url 'change_password' %}" class="settings-form">
-      {% csrf_token %}
-      <h2>修改密碼</h2>
-      {{ password_form.as_p }}
-      <button type="submit">更新密碼</button>
-    </form>
+      <div class="settings-content">
+        {% if active_tab == 'response' %}
+          <form method="post" action="{% url 'update_response_preferences' %}" class="settings-form">
+            {% csrf_token %}
+            <h2>回答偏好</h2>
+            <p class="settings-description">這裡會直接影響 LLM 回覆方式，不只是畫面設定。</p>
+            {{ response_form.as_p }}
+            <div class="preference-examples">
+              <article>
+                <h3>短回答</h3>
+                <p>更像「先接住你」：抓重點、少分析、給一個很小的下一步。</p>
+              </article>
+              <article>
+                <h3>長回答</h3>
+                <p>更像「陪你整理」：拆情緒、拆脈絡、補上可能的心理學概念與可選路線。</p>
+              </article>
+            </div>
+            <button type="submit">儲存回答偏好</button>
+          </form>
+        {% elif active_tab == 'visual' %}
+          <form method="post" action="{% url 'update_visual_preferences' %}" class="settings-form">
+            {% csrf_token %}
+            <h2>視覺化設定</h2>
+            <p class="settings-description">調整主題色，之後可以擴充字體大小、泡泡密度、暗色模式與聊天背景。</p>
+            {{ visual_form.as_p }}
+            <button type="submit">儲存視覺設定</button>
+          </form>
+        {% elif active_tab == 'advanced' %}
+          <form method="post" action="{% url 'update_advanced_settings' %}" class="settings-form">
+            {% csrf_token %}
+            <h2>高級設定</h2>
+            <p class="settings-description">這些設定會影響記憶、媒體卡片和未來可上架功能的行為。</p>
+            {{ advanced_form.as_p }}
+            <div class="feature-roadmap">
+              <h3>可擴充功能</h3>
+              <ul>
+                <li>諮商取向查詢：CBT、ACT、依附理論、情緒焦點、敘事治療。</li>
+                <li>每次回答顯示「使用到的技能」與「為什麼這樣回」。</li>
+                <li>聊天資料匯出、刪除、訂閱方案與多模型切換。</li>
+              </ul>
+            </div>
+            <button type="submit">儲存高級設定</button>
+          </form>
+        {% elif active_tab == 'security' %}
+          <form method="post" action="{% url 'change_password' %}" class="settings-form">
+            {% csrf_token %}
+            <h2>安全與密碼</h2>
+            {{ password_form.as_p }}
+            <button type="submit">更新密碼</button>
+          </form>
+        {% else %}
+          <form method="post" action="{% url 'update_profile' %}" class="settings-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'settings_profile' %}">
+            <h2>個資設定</h2>
+            <p class="settings-description">這裡保存基本聯絡資料，之後可以接上 Email 或電話驗證。</p>
+            {{ profile_form.as_p }}
+            <button type="submit">儲存個資</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
   </section>
 </main>
 {% endblock %}

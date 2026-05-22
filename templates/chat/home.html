@@ -9,9 +9,13 @@
     </div>
     <nav class="conversation-list">
       {% for item in rooms %}
-        <a class="{% if item.id == room.id %}active{% endif %}" href="{% url 'room' item.id %}">
-          {{ item.title }}
-        </a>
+        <div class="conversation-item {% if item.id == room.id %}active{% endif %}">
+          <a href="{% url 'room' item.id %}">{{ item.title }}</a>
+          <form method="post" action="{% url 'delete_room' item.id %}" onsubmit="return confirm('確定要刪除這個聊天室嗎？這會一併刪除對話紀錄。');">
+            {% csrf_token %}
+            <button type="submit" title="刪除聊天室">×</button>
+          </form>
+        </div>
       {% empty %}
         <span class="empty">尚無對話</span>
       {% endfor %}

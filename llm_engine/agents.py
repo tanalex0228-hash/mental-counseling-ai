@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from accounts.views import ensure_profile
 from chat.memory import long_term_memory, recent_history
 from chat.models import KnowledgeDocument
 from chat.tooling import detect_music_or_interest_query
@@ -41,9 +42,21 @@ class AgentOutput:
 
 class ContextAgent:
     def run(self, room):
+        profile = ensure_profile(room.user)
         memory = long_term_memory(room.user)
         history = recent_history(room)
-        return f"聊天室摘要：{room.summary or '尚無摘要'}\n\n長期記憶：\n{memory or '尚無'}\n\n近期對話：\n{history or '尚無'}"
+        preference = (
+            f"回答長度偏好：{profile.get_response_length_display()}\n"
+            f"回答語氣偏好：{profile.get_response_tone_display()}\n"
+            f"顯示心理學理論依據：{'是' if profile.show_theory_basis else '否'}\n"
+            f"允許長期摘要：{'是' if profile.allow_memory_summaries else '否'}\n"
+            f"允許站內影音卡片：{'是' if profile.allow_inline_media_cards else '否'}"
+        )
+        return (
+            f"使用者偏好：\n{preference}\n\n"
+            f"聊天室摘要：{room.summary or '尚無摘要'}\n\n"
+            f"長期記憶：\n{memory or '尚無'}\n\n近期對話：\n{history or '尚無'}"
+        )
 
 
 class ClassificationAgent:

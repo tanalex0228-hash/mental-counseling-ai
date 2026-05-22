@@ -57,8 +57,10 @@ def chat_home(request, room_id=None):
                 token_count=count_tokens(agent_output.answer),
             )
             append_message(room, assistant_message)
-            attach_interest_cards(assistant_message, user_text)
-            refresh_room_summary(room)
+            if profile.allow_inline_media_cards:
+                attach_interest_cards(assistant_message, user_text)
+            if profile.allow_memory_summaries:
+                refresh_room_summary(room)
         return redirect("room", room_id=room.id)
 
     return render(
@@ -78,6 +80,18 @@ def chat_home(request, room_id=None):
 def new_conversation(request):
     room = ChatRoom.objects.create(user=request.user)
     return redirect("room", room_id=room.id)
+
+
+@require_POST
+@login_required
+def delete_room(request, room_id):
+    room = get_object_or_404(ChatRoom, id=room_id, user=request.user)
+    room.delete()
+    messages.success(request, "聊天室已刪除。")
+    next_room = ChatRoom.objects.filter(user=request.user).first()
+    if next_room:
+        return redirect("room", room_id=next_room.id)
+    return redirect("chat_home")
 
 
 @require_POST
@@ -129,7 +143,11 @@ def chat_api(request):
         token_count=count_tokens(agent_output.answer),
     )
     append_message(room, assistant_message)
-    refresh_room_summary(room)
+    profile = ensure_profile(request.user)
+    if profile.allow_inline_media_cards:
+        attach_interest_cards(assistant_message, user_text)
+    if profile.allow_memory_summaries:
+        refresh_room_summary(room)
 
     return JsonResponse(
         {

@@ -5,7 +5,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
-from .forms import ProfileSettingsForm, RegisterForm
+from .forms import AdvancedSettingsForm, ProfileSettingsForm, RegisterForm, ResponsePreferenceForm, VisualPreferenceForm
 from .models import UserProfile
 
 
@@ -37,14 +37,26 @@ def register(request):
 
 
 @login_required
-def settings_view(request):
+def settings_view(request, tab=None):
     profile = ensure_profile(request.user)
     profile_form = ProfileSettingsForm(instance=profile)
+    response_form = ResponsePreferenceForm(instance=profile)
+    visual_form = VisualPreferenceForm(instance=profile)
+    advanced_form = AdvancedSettingsForm(instance=profile)
     password_form = PasswordChangeForm(request.user)
+    active_tab = tab or request.GET.get("tab", "profile")
     return render(
         request,
         "accounts/settings.html",
-        {"profile": profile, "profile_form": profile_form, "password_form": password_form},
+        {
+            "profile": profile,
+            "profile_form": profile_form,
+            "response_form": response_form,
+            "visual_form": visual_form,
+            "advanced_form": advanced_form,
+            "password_form": password_form,
+            "active_tab": active_tab,
+        },
     )
 
 
@@ -65,6 +77,45 @@ def update_profile(request):
 
 @require_POST
 @login_required
+def update_response_preferences(request):
+    profile = ensure_profile(request.user)
+    form = ResponsePreferenceForm(request.POST, instance=profile)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "回答偏好已儲存。")
+    else:
+        messages.error(request, "回答偏好格式有誤，請再檢查一次。")
+    return redirect("settings_response")
+
+
+@require_POST
+@login_required
+def update_visual_preferences(request):
+    profile = ensure_profile(request.user)
+    form = VisualPreferenceForm(request.POST, instance=profile)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "視覺偏好已儲存。")
+    else:
+        messages.error(request, "視覺偏好格式有誤，請再檢查一次。")
+    return redirect("settings_visual")
+
+
+@require_POST
+@login_required
+def update_advanced_settings(request):
+    profile = ensure_profile(request.user)
+    form = AdvancedSettingsForm(request.POST, instance=profile)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "高級設定已儲存。")
+    else:
+        messages.error(request, "高級設定格式有誤，請再檢查一次。")
+    return redirect("settings_advanced")
+
+
+@require_POST
+@login_required
 def change_password(request):
     form = PasswordChangeForm(request.user, request.POST)
     if form.is_valid():
@@ -73,4 +124,4 @@ def change_password(request):
         messages.success(request, "密碼已更新。")
     else:
         messages.error(request, "密碼更新失敗，請確認目前密碼與新密碼格式。")
-    return redirect("settings")
+    return redirect("settings_security")

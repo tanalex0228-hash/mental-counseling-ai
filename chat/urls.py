@@ -17,4 +17,5 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("settings/theme/", views.update_theme, name="update_theme"),
     path("conversation/new/", views.new_conversation, name="new_conversation"),
+    path("conversation/<int:room_id>/delete/", views.delete_room, name="delete_room"),
 ]
