@@ -41,8 +41,34 @@ class ResponsePreferenceForm(forms.ModelForm):
 class VisualPreferenceForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ("preferred_theme_color",)
-        labels = {"preferred_theme_color": "主題色"}
+        fields = (
+            "preferred_theme_color",
+            "custom_accent_color",
+            "font_scale",
+            "chat_density",
+            "dark_mode",
+            "visual_effect",
+            "bubble_style",
+        )
+        labels = {
+            "preferred_theme_color": "預設色調",
+            "custom_accent_color": "自訂主色",
+            "font_scale": "字體大小",
+            "chat_density": "泡泡密度",
+            "dark_mode": "暗色模式",
+            "visual_effect": "聊天背景特效",
+            "bubble_style": "對話框造型",
+        }
+        help_texts = {
+            "preferred_theme_color": "可以先選一個基礎色調，再用自訂主色微調。",
+            "custom_accent_color": "用色盤選你喜歡的主色，會影響按鈕、使用者訊息泡泡與重點色。",
+            "chat_density": "緊湊適合大量閱讀；寬鬆適合比較放鬆的陪伴感。",
+            "visual_effect": "雪花、泡泡、下雨與陽光光影只會出現在聊天頁背景。",
+            "bubble_style": "改變 assistant/user 對話泡泡的圓角、透明與光影感。",
+        }
+        widgets = {
+            "custom_accent_color": forms.TextInput(attrs={"type": "color"}),
+        }
 
 
 class AdvancedSettingsForm(forms.ModelForm):

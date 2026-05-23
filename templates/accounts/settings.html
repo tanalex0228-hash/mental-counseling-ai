@@ -50,8 +50,15 @@
           <form method="post" action="{% url 'update_visual_preferences' %}" class="settings-form">
             {% csrf_token %}
             <h2>視覺化設定</h2>
-            <p class="settings-description">調整主題色，之後可以擴充字體大小、泡泡密度、暗色模式與聊天背景。</p>
+            <p class="settings-description">調整自訂主色、字體大小、泡泡密度、暗色模式、聊天背景特效與對話框造型。這些設定會套用到你的聊天介面。</p>
             {{ visual_form.as_p }}
+            <div class="visual-preview">
+              <span>預覽</span>
+              <div class="preview-row">
+                <div class="preview-bubble assistant-preview">我會用你選的風格陪你整理情緒。</div>
+                <div class="preview-bubble user-preview">這樣看起來舒服多了。</div>
+              </div>
+            </div>
             <button type="submit">儲存視覺設定</button>
           </form>
         {% elif active_tab == 'advanced' %}

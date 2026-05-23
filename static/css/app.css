@@ -11,6 +11,15 @@
   --border: #e5e5e5;
   --assistant: #ffffff;
   --user: #e0f3ee;
+  --font-scale: 1;
+  --bubble-radius: 8px;
+  --bubble-border: 1px solid var(--border);
+  --bubble-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --message-gap: 18px;
+  --message-pad-y: 26px;
+  --message-pad-x: 18px;
+  --bubble-pad-y: 13px;
+  --bubble-pad-x: 15px;
 }
 
 .theme-indigo {
@@ -37,6 +46,64 @@
   --user: #e7ebef;
 }
 
+.theme-dark {
+  color-scheme: dark;
+  --bg: #101214;
+  --panel: #171a1d;
+  --sidebar: #0b0d0f;
+  --sidebar-text: #f5f7f8;
+  --text: #edf1f2;
+  --muted: #a7b0b5;
+  --border: #2a3135;
+  --assistant: rgba(23, 26, 29, 0.94);
+  --user: color-mix(in srgb, var(--accent), #101214 72%);
+}
+
+.font-small {
+  --font-scale: 0.94;
+}
+
+.font-large {
+  --font-scale: 1.08;
+}
+
+.density-compact {
+  --message-gap: 10px;
+  --message-pad-y: 16px;
+  --message-pad-x: 14px;
+  --bubble-pad-y: 9px;
+  --bubble-pad-x: 12px;
+}
+
+.density-spacious {
+  --message-gap: 24px;
+  --message-pad-y: 34px;
+  --message-pad-x: 24px;
+  --bubble-pad-y: 16px;
+  --bubble-pad-x: 18px;
+}
+
+.bubble-soft {
+  --bubble-radius: 18px;
+}
+
+.bubble-sharp {
+  --bubble-radius: 4px;
+}
+
+.bubble-glass {
+  --bubble-radius: 16px;
+  --assistant: rgba(255, 255, 255, 0.72);
+  --bubble-border: 1px solid rgba(255, 255, 255, 0.48);
+  --bubble-shadow: 0 16px 50px rgba(20, 30, 35, 0.12);
+}
+
+.theme-dark.bubble-glass {
+  --assistant: rgba(23, 26, 29, 0.72);
+  --bubble-border: 1px solid rgba(255, 255, 255, 0.12);
+  --bubble-shadow: 0 16px 50px rgba(0, 0, 0, 0.26);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -46,6 +113,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+  font-size: calc(16px * var(--font-scale));
 }
 
 body:has(.app-shell) {
@@ -258,6 +326,8 @@ a {
   display: grid;
   grid-template-rows: auto 1fr auto;
   background: var(--bg);
+  position: relative;
+  overflow: hidden;
 }
 
 .chat-header {
@@ -267,6 +337,11 @@ a {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.theme-dark .chat-header,
+.theme-dark .composer-wrap {
+  background: rgba(16, 18, 20, 0.94);
 }
 
 .chat-header h1 {
@@ -281,15 +356,17 @@ a {
 }
 
 .messages {
-  padding: 26px 18px 34px;
+  padding: var(--message-pad-y) var(--message-pad-x) 34px;
   overflow-y: auto;
   min-height: 0;
   overscroll-behavior: contain;
+  position: relative;
+  z-index: 1;
 }
 
 .message {
   display: flex;
-  margin: 0 auto 18px;
+  margin: 0 auto var(--message-gap);
   width: min(820px, 100%);
 }
 
@@ -300,11 +377,15 @@ a {
 .bubble {
   max-width: min(720px, 88%);
   background: var(--assistant);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 13px 15px;
+  border: var(--bubble-border);
+  border-radius: var(--bubble-radius);
+  padding: var(--bubble-pad-y) var(--bubble-pad-x);
   line-height: 1.65;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  box-shadow: var(--bubble-shadow);
+}
+
+.bubble-glass .bubble {
+  backdrop-filter: blur(18px) saturate(1.3);
 }
 
 .message.user .bubble {
@@ -346,6 +427,8 @@ a {
   grid-template-columns: auto minmax(0, 900px);
   justify-content: center;
   gap: 10px;
+  position: relative;
+  z-index: 2;
 }
 
 .tool-rail {
@@ -415,6 +498,87 @@ a {
   align-self: end;
   min-width: 72px;
   height: 54px;
+}
+
+.effect-snow .chat-panel::before,
+.effect-bubbles .chat-panel::before,
+.effect-rain .chat-panel::before,
+.effect-sunlight .chat-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.effect-snow .chat-panel::before {
+  opacity: 0.5;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.9) 0 1px, transparent 1.5px),
+    radial-gradient(circle, color-mix(in srgb, var(--accent), white 55%) 0 1px, transparent 1.8px);
+  background-size: 54px 54px, 92px 92px;
+  animation: snow-drift 22s linear infinite;
+}
+
+.effect-bubbles .chat-panel::before {
+  opacity: 0.42;
+  background-image:
+    radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--accent), transparent 62%) 0 10px, transparent 12px),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.62) 0 8px, transparent 10px),
+    radial-gradient(circle at 40% 80%, color-mix(in srgb, var(--accent), white 72%) 0 14px, transparent 16px);
+  background-size: 180px 180px, 260px 260px, 320px 320px;
+  animation: bubble-rise 18s ease-in-out infinite alternate;
+}
+
+.effect-rain .chat-panel::before {
+  opacity: 0.35;
+  background-image: linear-gradient(110deg, transparent 0 46%, color-mix(in srgb, var(--accent), white 58%) 47% 48%, transparent 49% 100%);
+  background-size: 18px 58px;
+  animation: rain-fall 760ms linear infinite;
+}
+
+.effect-sunlight .chat-panel::before {
+  opacity: 0.62;
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.52), transparent 36%),
+    radial-gradient(circle at 78% 12%, color-mix(in srgb, var(--accent), white 76%) 0, transparent 34%),
+    linear-gradient(180deg, transparent, color-mix(in srgb, var(--accent), transparent 86%));
+  filter: saturate(1.18) contrast(1.04);
+}
+
+@keyframes snow-drift {
+  from {
+    background-position: 0 -80px, 0 -120px;
+  }
+  to {
+    background-position: 40px 180px, -60px 220px;
+  }
+}
+
+@keyframes bubble-rise {
+  from {
+    background-position: 0 70px, 30px 160px, -40px 220px;
+  }
+  to {
+    background-position: 28px -40px, -24px 40px, 34px 80px;
+  }
+}
+
+@keyframes rain-fall {
+  from {
+    background-position: 0 -58px;
+  }
+  to {
+    background-position: 0 58px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .effect-snow .chat-panel::before,
+  .effect-bubbles .chat-panel::before,
+  .effect-rain .chat-panel::before {
+    animation: none;
+  }
 }
 
 .composer button:disabled {
@@ -1075,6 +1239,21 @@ a {
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 10px 12px;
+  background: var(--panel);
+  color: var(--text);
+}
+
+.settings-form input[type="checkbox"] {
+  justify-self: start;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
+.settings-form input[type="color"] {
+  width: 84px;
+  height: 42px;
+  padding: 3px;
 }
 
 .notice-list {
@@ -1119,6 +1298,50 @@ a {
 .feature-roadmap ul {
   margin: 8px 0 0;
   padding-left: 20px;
+}
+
+.visual-preview {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent), white 86%), transparent),
+    var(--bg);
+  padding: 14px;
+  margin: 14px 0 16px;
+}
+
+.visual-preview > span {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.preview-row {
+  display: grid;
+  gap: 10px;
+}
+
+.preview-bubble {
+  width: min(520px, 100%);
+  border-radius: var(--bubble-radius);
+  border: var(--bubble-border);
+  box-shadow: var(--bubble-shadow);
+  padding: var(--bubble-pad-y) var(--bubble-pad-x);
+  line-height: 1.55;
+}
+
+.assistant-preview {
+  background: var(--assistant);
+}
+
+.user-preview {
+  justify-self: end;
+  background: var(--user);
+}
+
+.bubble-glass .visual-preview {
+  backdrop-filter: blur(18px) saturate(1.25);
 }
 
 @media (max-width: 760px) {

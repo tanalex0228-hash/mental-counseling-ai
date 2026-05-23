@@ -82,13 +82,22 @@ class ChatFlowTests(TestCase):
 
         response = self.client.post(
             reverse("update_visual_preferences"),
-            {"preferred_theme_color": "rose"},
+            {
+                "preferred_theme_color": "rose",
+                "custom_accent_color": "#b64b68",
+                "font_scale": "large",
+                "chat_density": "spacious",
+                "visual_effect": "snow",
+                "bubble_style": "soft",
+            },
         )
 
         self.assertEqual(response.status_code, 302)
         profile = UserProfile.objects.get(user=self.user)
         self.assertEqual(profile.email, "student2@example.com")
         self.assertEqual(profile.preferred_theme_color, "rose")
+        self.assertEqual(profile.custom_accent_color, "#b64b68")
+        self.assertEqual(profile.visual_effect, "snow")
 
     def test_delete_room_only_removes_owned_room(self):
         self.client.login(username="student", password="strong-test-pass-123")
