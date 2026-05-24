@@ -46,6 +46,14 @@
       </div>
     </header>
 
+    {% if messages %}
+      <div class="chat-notices">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <div class="messages">
       {% for message in messages_list %}
         <article class="message {{ message.role }}">
@@ -105,7 +113,7 @@
         {% csrf_token %}
         <label class="attach-button" title="上傳照片">
           照片
-          <input type="file" name="attachment" accept="image/*">
+          <input type="file" name="attachment" accept="image/jpeg,image/png,image/webp">
         </label>
         <textarea name="message" rows="3" placeholder="輸入你的想法..."></textarea>
         <button type="submit">送出</button>
@@ -127,7 +135,7 @@
       <h2>選擇你現在需要的功能</h2>
       <div class="drawer-actions">
         <button type="button" data-tool-section-button="media">找影片 / 音樂 / 圖片</button>
-        <button type="button" data-tool-section-button="photo">上傳照片給 LLM 看</button>
+        <button type="button" data-tool-section-button="photo">傳照片來看看</button>
       </div>
     </div>
 
@@ -142,7 +150,7 @@
         <span>搜尋影片後，點結果會在這裡播放</span>
       </div>
       <div class="youtube-controls">
-        <input id="youtubeQuery" type="search" placeholder="輸入想看的內容，例如 張元英 可愛">
+        <input id="youtubeQuery" type="search" placeholder="輸入想看的內容，例如 放鬆音樂、搞笑影片">
         <button type="button" id="searchYoutube">搜尋</button>
       </div>
       <div class="quick-vibes">
@@ -162,9 +170,9 @@
     </div>
 
     <div class="tool-card tool-section" data-tool-section="photo">
-      <span class="tool-kicker">照片理解</span>
+      <span class="tool-kicker">照片陪你看</span>
       <h2>直接在輸入框上傳</h2>
-      <p class="tool-copy">點聊天輸入框旁的「照片」，可以上傳合照、截圖或生活照片。LLM 會看圖回覆，但不會辨識真實身分。</p>
+      <p class="tool-copy">點聊天輸入框旁的「照片」，可以傳合照、截圖或生活照片。我會先看見畫面裡的氛圍和細節，再陪你聊，不會辨識真實身分。</p>
     </div>
   </aside>
 </main>

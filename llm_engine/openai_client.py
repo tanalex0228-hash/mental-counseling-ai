@@ -1,7 +1,6 @@
-import base64
-import mimetypes
-
 from django.conf import settings
+
+from chat.image_utils import prepare_image_data_url
 
 
 class OpenAIClient:
@@ -15,12 +14,10 @@ class OpenAIClient:
             client = OpenAI(api_key=settings.OPENAI_API_KEY)
             user_content = user_text
             if image_path:
-                mime_type = mimetypes.guess_type(image_path)[0] or "image/jpeg"
-                with open(image_path, "rb") as image_file:
-                    encoded = base64.b64encode(image_file.read()).decode("utf-8")
+                image_data_url = prepare_image_data_url(image_path)
                 user_content = [
                     {"type": "text", "text": user_text or "請看看這張照片，溫柔地描述你觀察到的情緒、氛圍和可能的故事。不要辨識真實身分。"},
-                    {"type": "image_url", "image_url": {"url": f"data:{mime_type};base64,{encoded}"}},
+                    {"type": "image_url", "image_url": {"url": image_data_url}},
                 ]
 
             response = client.chat.completions.create(

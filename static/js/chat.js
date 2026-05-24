@@ -79,7 +79,7 @@ function setupCompanionTools() {
   const openToolDrawer = document.querySelector("#openToolDrawer");
   const titles = {
     media: "影音探索",
-    photo: "照片理解"
+    photo: "照片陪你看"
   };
 
   if (openToolDrawer && panel) {

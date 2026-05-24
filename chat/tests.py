@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
@@ -47,6 +48,34 @@ class ChatFlowTests(TestCase):
         self.assertEqual(ChatMessage.objects.filter(room=room).count(), 2)
         first_message = ChatMessage.objects.filter(room=room).first()
         self.assertTrue(first_message.markdown_backup_path.endswith(f"{room.id}.md"))
+
+    def test_chat_post_accepts_supported_photo_upload(self):
+        self.client.login(username="student", password="strong-test-pass-123")
+        image = SimpleUploadedFile(
+            "photo.png",
+            (
+                b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01"
+                b"\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde"
+                b"\x00\x00\x00\x0cIDATx\x9cc\xf8\xff\xff?\x00\x05"
+                b"\xfe\x02\xfeA\xe2!\xbc\x00\x00\x00\x00IEND\xaeB`\x82"
+            ),
+            content_type="image/png",
+        )
+
+        response = self.client.post(reverse("chat_home"), {"message": "看看這張照片", "attachment": image})
+
+        self.assertEqual(response.status_code, 302)
+        user_message = ChatMessage.objects.filter(role="user").first()
+        self.assertTrue(user_message.uploaded_file.name)
+
+    def test_chat_post_rejects_unsupported_photo_format(self):
+        self.client.login(username="student", password="strong-test-pass-123")
+        image = SimpleUploadedFile("photo.heic", b"not-real-heic", content_type="image/heic")
+
+        response = self.client.post(reverse("chat_home"), {"message": "看看這張照片", "attachment": image})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ChatMessage.objects.count(), 0)
 
     def test_chat_api_requires_login(self):
         response = Client().post(

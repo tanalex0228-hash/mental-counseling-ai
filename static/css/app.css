@@ -364,6 +364,22 @@ a {
   z-index: 1;
 }
 
+.chat-notices {
+  position: relative;
+  z-index: 2;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--user), white 44%);
+  padding: 8px 24px;
+}
+
+.chat-notices p {
+  width: min(820px, 100%);
+  margin: 0 auto;
+  color: var(--accent-strong);
+  line-height: 1.5;
+  font-size: 14px;
+}
+
 .message {
   display: flex;
   margin: 0 auto var(--message-gap);

@@ -14,6 +14,7 @@ from accounts.views import ensure_profile
 from llm_engine.agents import CounselingOrchestrator
 
 from .forms import ThemeForm
+from .image_utils import validate_uploaded_image
 from .markdown_logger import append_message
 from .memory import refresh_room_summary
 from .models import ChatMessage, ChatRoom, ChatToolCard
@@ -34,6 +35,10 @@ def chat_home(request, room_id=None):
         user_text = request.POST.get("message", "").strip()
         uploaded_file = request.FILES.get("attachment")
         if user_text or uploaded_file:
+            image_error = validate_uploaded_image(uploaded_file) if uploaded_file else ""
+            if image_error:
+                messages.error(request, image_error)
+                return redirect("room", room_id=room.id)
             user_message = ChatMessage.objects.create(
                 room=room,
                 user=request.user,
