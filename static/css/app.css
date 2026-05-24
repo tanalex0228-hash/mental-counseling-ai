@@ -1266,8 +1266,6 @@ a {
 @media (max-width: 820px) {
   body:has(.app-shell) {
     overflow: hidden;
-    position: fixed;
-    width: 100%;
   }
 
   .app-shell {
