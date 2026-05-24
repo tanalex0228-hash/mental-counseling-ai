@@ -53,6 +53,7 @@ class UserProfile(models.Model):
     visual_effect = models.CharField(max_length=16, choices=EFFECT_CHOICES, default="none")
     bubble_style = models.CharField(max_length=16, choices=BUBBLE_STYLE_CHOICES, default="standard")
     dark_mode = models.BooleanField(default=False)
+    cyberpunk_mode = models.BooleanField(default=False)
     response_length = models.CharField(max_length=16, choices=RESPONSE_LENGTH_CHOICES, default="balanced")
     response_tone = models.CharField(max_length=24, choices=TONE_CHOICES, default="warm")
     show_theory_basis = models.BooleanField(default=False)

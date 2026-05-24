@@ -8,8 +8,8 @@
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
 </head>
 <body
-  class="theme-{{ profile.preferred_theme_color|default:'teal' }} {% if profile.dark_mode %}theme-dark{% endif %} font-{{ profile.font_scale|default:'normal' }} density-{{ profile.chat_density|default:'cozy' }} effect-{{ profile.visual_effect|default:'none' }} bubble-{{ profile.bubble_style|default:'standard' }}"
-  {% if profile.custom_accent_color %}style="--accent: {{ profile.custom_accent_color }}; --accent-strong: color-mix(in srgb, {{ profile.custom_accent_color }}, black 28%); --user: color-mix(in srgb, {{ profile.custom_accent_color }}, white 84%);"{% endif %}
+  class="theme-{{ profile.preferred_theme_color|default:'teal' }} {% if profile.dark_mode %}theme-dark{% endif %} {% if profile.cyberpunk_mode %}theme-cyberpunk{% endif %} font-{{ profile.font_scale|default:'normal' }} density-{{ profile.chat_density|default:'cozy' }} effect-{{ profile.visual_effect|default:'none' }} bubble-{{ profile.bubble_style|default:'standard' }}"
+  {% if profile.custom_accent_color and not profile.cyberpunk_mode %}style="--accent: {{ profile.custom_accent_color }}; --accent-strong: color-mix(in srgb, {{ profile.custom_accent_color }}, black 28%); --user: color-mix(in srgb, {{ profile.custom_accent_color }}, white 84%);"{% endif %}
 >
   {% block content %}{% endblock %}
   {% block scripts %}{% endblock %}

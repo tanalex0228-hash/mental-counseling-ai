@@ -47,6 +47,7 @@ class VisualPreferenceForm(forms.ModelForm):
             "font_scale",
             "chat_density",
             "dark_mode",
+            "cyberpunk_mode",
             "visual_effect",
             "bubble_style",
         )
@@ -56,6 +57,7 @@ class VisualPreferenceForm(forms.ModelForm):
             "font_scale": "字體大小",
             "chat_density": "泡泡密度",
             "dark_mode": "暗色模式",
+            "cyberpunk_mode": "賽博龐克玻璃模式",
             "visual_effect": "聊天背景特效",
             "bubble_style": "對話框造型",
         }
@@ -63,6 +65,7 @@ class VisualPreferenceForm(forms.ModelForm):
             "preferred_theme_color": "可以先選一個基礎色調，再用自訂主色微調。",
             "custom_accent_color": "用色盤選你喜歡的主色，會影響按鈕、使用者訊息泡泡與重點色。",
             "chat_density": "緊湊適合大量閱讀；寬鬆適合比較放鬆的陪伴感。",
+            "cyberpunk_mode": "銀灰黑高對比、霓虹光線、玻璃面板與多層光影。開啟後會優先套用酷感介面。",
             "visual_effect": "雪花、泡泡、下雨與陽光光影只會出現在聊天頁背景。",
             "bubble_style": "改變 assistant/user 對話泡泡的圓角、透明與光影感。",
         }

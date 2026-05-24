@@ -149,6 +149,7 @@ class ChatFlowTests(TestCase):
                 "custom_accent_color": "#b64b68",
                 "font_scale": "large",
                 "chat_density": "spacious",
+                "cyberpunk_mode": "on",
                 "visual_effect": "snow",
                 "bubble_style": "soft",
             },
@@ -159,6 +160,7 @@ class ChatFlowTests(TestCase):
         self.assertEqual(profile.email, "student2@example.com")
         self.assertEqual(profile.preferred_theme_color, "rose")
         self.assertEqual(profile.custom_accent_color, "#b64b68")
+        self.assertTrue(profile.cyberpunk_mode)
         self.assertEqual(profile.visual_effect, "snow")
 
     def test_delete_room_only_removes_owned_room(self):
