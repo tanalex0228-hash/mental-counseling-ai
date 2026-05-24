@@ -11,10 +11,16 @@ SECRET_KEY = os.environ.get("SECRET_KEY") or os.environ.get(
     "DJANGO_SECRET_KEY", "dev-only-secret-key-change-before-deploy"
 )
 DEBUG = os.environ.get("DEBUG", os.environ.get("DJANGO_DEBUG", "True")).lower() == "true"
+ENABLE_HTTPS = os.environ.get("ENABLE_HTTPS", "False").lower() == "true"
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
     if host.strip()
+]
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
 ]
 
 INSTALLED_APPS = [
@@ -111,3 +117,12 @@ OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4.1-mini")
 KNOWLEDGE_BASE_DIR = BASE_DIR / "knowledge_base"
 MARKDOWN_LOG_DIR = BASE_DIR / "user_data" / "markdown_logs"
 CHROMA_DB_DIR = BASE_DIR / "vector_store" / "chroma_db"
+
+if ENABLE_HTTPS:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", "0"))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False

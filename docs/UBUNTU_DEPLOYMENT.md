@@ -143,11 +143,67 @@ sudo systemctl reload nginx
 
 ## HTTPS
 
-If you have a domain:
+If you have a domain, use a public certificate:
 
 ```bash
 sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx -d your_domain.com
+```
+
+If you only have a public IP, use a temporary self-signed certificate. Browsers will show a warning, but traffic is encrypted:
+
+```bash
+sudo mkdir -p /etc/ssl/mental-counseling-ai
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
+  -keyout /etc/ssl/mental-counseling-ai/selfsigned.key \
+  -out /etc/ssl/mental-counseling-ai/selfsigned.crt \
+  -subj "/CN=YOUR_PUBLIC_IP" \
+  -addext "subjectAltName = IP:YOUR_PUBLIC_IP"
+sudo chmod 600 /etc/ssl/mental-counseling-ai/selfsigned.key
+```
+
+Nginx HTTPS example:
+
+```nginx
+server {
+    listen 80;
+    server_name YOUR_PUBLIC_IP;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name YOUR_PUBLIC_IP;
+
+    ssl_certificate /etc/ssl/mental-counseling-ai/selfsigned.crt;
+    ssl_certificate_key /etc/ssl/mental-counseling-ai/selfsigned.key;
+
+    client_max_body_size 25M;
+
+    location /static/ {
+        alias /home/alex/mental-counseling-ai/staticfiles/;
+    }
+
+    location /media/ {
+        alias /home/alex/mental-counseling-ai/media/;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}
+```
+
+Set production HTTPS environment values:
+
+```env
+ENABLE_HTTPS=True
+CSRF_TRUSTED_ORIGINS=https://YOUR_PUBLIC_IP
+SECURE_HSTS_SECONDS=0
 ```
 
 ## Update Deployment
