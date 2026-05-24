@@ -125,6 +125,21 @@
     0 0 0 1px rgba(255, 255, 255, 0.07);
 }
 
+.theme-cyberpunk.bubble-soft {
+  --bubble-radius: 16px;
+}
+
+.theme-cyberpunk.bubble-sharp {
+  --bubble-radius: 2px;
+}
+
+.theme-cyberpunk.bubble-glass {
+  --bubble-radius: 14px;
+  --assistant: rgba(12, 12, 13, 0.56);
+  --user: rgba(245, 245, 238, 0.16);
+  --bubble-border: 1px solid rgba(245, 245, 238, 0.44);
+}
+
 * {
   box-sizing: border-box;
 }
