@@ -98,8 +98,18 @@ class ResponseAgent:
         self.prompt_builder = PromptBuilder()
         self.safety_guard = SafetyGuard()
 
-    def run(self, *, context, classification, skills, rag_context, user_text, image_path: str = "") -> AgentOutput:
-        safety = self.safety_guard.check_user_message(user_text)
+    def run(
+        self,
+        *,
+        context,
+        classification,
+        skills,
+        rag_context,
+        user_text,
+        image_path: str = "",
+        safety_text: str = "",
+    ) -> AgentOutput:
+        safety = self.safety_guard.check_user_message(safety_text or user_text)
         if safety.is_crisis:
             return AgentOutput(context, classification, skills, rag_context, safety.response, safety.label)
         prompt = self.prompt_builder.build(
@@ -111,6 +121,17 @@ class ResponseAgent:
         )
         answer = self.client.complete(prompt, user_text, image_path=image_path)
         answer = self.safety_guard.review_assistant_response(answer)
+        if self.safety_guard.looks_like_crisis_response(answer):
+            retry_prompt = (
+                f"{prompt}\n\n"
+                "重要修正：使用者目前沒有表達自傷、傷人、受暴或立即危險。"
+                "上一版若出現危機模板屬於誤判。請不要輸出危機安全模板，"
+                "請改為根據使用者文字與照片可見內容，做具體、自然、溫和的回應。"
+            )
+            answer = self.client.complete(retry_prompt, user_text, image_path=image_path)
+            answer = self.safety_guard.review_assistant_response(answer)
+            if self.safety_guard.looks_like_crisis_response(answer):
+                answer = "我先不把這張照片解讀成危機。你可以跟我說說，你希望我比較看哪一部分：畫面裡的氛圍、空間細節，還是這張照片讓你想到的心情？"
         answer = self._quality_polish(answer, classification)
         answer = self._high_pressure_polish(answer, classification, user_text)
         answer = self._interest_polish(answer, user_text)
@@ -193,7 +214,7 @@ class CounselingOrchestrator:
         self.rag_agent = RagAgent()
         self.response_agent = ResponseAgent()
 
-    def run(self, room, user_text: str, image_path: str = "") -> AgentOutput:
+    def run(self, room, user_text: str, image_path: str = "", safety_text: str = "") -> AgentOutput:
         context = self.context_agent.run(room)
         classification = self.classification_agent.run(user_text)
         skills = self.skill_agent.run(classification, user_text)
@@ -205,4 +226,5 @@ class CounselingOrchestrator:
             rag_context=rag_context,
             user_text=user_text,
             image_path=image_path,
+            safety_text=safety_text,
         )

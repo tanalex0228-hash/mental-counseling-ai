@@ -53,7 +53,12 @@ def chat_home(request, room_id=None):
                 room.save(update_fields=["title", "updated_at"])
             image_path = resolve_image_context(room, user_message, user_text)
             llm_user_text = build_llm_user_text(room, user_message, user_text, bool(uploaded_file), bool(image_path))
-            agent_output = CounselingOrchestrator().run(room, llm_user_text, image_path=image_path)
+            agent_output = CounselingOrchestrator().run(
+                room,
+                llm_user_text,
+                image_path=image_path,
+                safety_text=user_text or user_message.content,
+            )
             assistant_message = ChatMessage.objects.create(
                 room=room,
                 user=request.user,
@@ -139,7 +144,7 @@ def chat_api(request):
     if room.title == "新的諮詢":
         room.title = user_text[:36]
         room.save(update_fields=["title", "updated_at"])
-    agent_output = CounselingOrchestrator().run(room, user_text)
+    agent_output = CounselingOrchestrator().run(room, user_text, safety_text=user_text)
     assistant_message = ChatMessage.objects.create(
         room=room,
         user=request.user,
@@ -334,11 +339,14 @@ def build_llm_user_text(
             "使用者這一輪上傳了一張照片。請把照片視為同一聊天室前文的延伸，"
             "結合前面使用者提到的背景、事件、情緒與關係脈絡來回答。"
             "不要重新問『這是什麼』；如果前文已說明背景，請直接連結照片細節與前文脈絡。"
+            "回答開頭必須先說出 2 到 4 個照片中可見的具體細節，例如空間、物件、光線、顏色、人物數量、姿勢或表情；"
+            "若看不清楚，請說明不確定的地方。不要只給心理建議。"
         )
     else:
         instruction = (
             "使用者正在追問同一聊天室最近上傳的照片。請沿用那張照片與前文脈絡回答，"
             "不要說你看不到照片，也不要要求使用者重新描述。"
+            "回答時仍要引用照片中可見的具體細節，不要只給抽象安慰。"
         )
 
     if previous_context:

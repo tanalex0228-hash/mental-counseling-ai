@@ -20,6 +20,13 @@ CRISIS_KEYWORDS = [
     "改藥",
 ]
 
+CRISIS_RESPONSE_MARKERS = [
+    "我很在意你現在的安全",
+    "若你此刻可能傷害自己",
+    "立刻聯絡當地緊急服務",
+    "離開可能造成傷害的物品或場所",
+]
+
 
 @dataclass
 class SafetyResult:
@@ -35,6 +42,9 @@ class SafetyGuard:
             if keyword in normalized:
                 return SafetyResult(is_crisis=True, response=CRISIS_RESPONSE, label="crisis_risk")
         return SafetyResult(is_crisis=False)
+
+    def looks_like_crisis_response(self, text: str) -> bool:
+        return any(marker in text for marker in CRISIS_RESPONSE_MARKERS)
 
     def review_assistant_response(self, text: str) -> str:
         blocked_claims = ["我診斷", "你得了", "停藥", "改藥"]

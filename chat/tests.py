@@ -4,6 +4,8 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from accounts.models import UserProfile
+from llm_engine.agents import CounselingOrchestrator
+from llm_engine.safety_guard import SafetyGuard
 
 from .models import ChatMessage, ChatRoom, KnowledgeDocument
 
@@ -76,6 +78,37 @@ class ChatFlowTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ChatMessage.objects.count(), 0)
+
+    def test_photo_prompt_is_not_treated_as_crisis(self):
+        guard = SafetyGuard()
+
+        result = guard.check_user_message("我上傳了一張照片，想請你看看。")
+
+        self.assertFalse(result.is_crisis)
+
+    def test_orchestrator_passes_photo_path_and_plain_safety_text(self):
+        room = ChatRoom.objects.create(user=self.user, title="照片測試")
+        captured = {}
+
+        class FakeResponseAgent:
+            def run(self, **kwargs):
+                captured.update(kwargs)
+                from llm_engine.agents import AgentOutput
+
+                return AgentOutput("", "", "", "", "我看見照片裡是一個明亮的房間。")
+
+        orchestrator = CounselingOrchestrator()
+        orchestrator.response_agent = FakeResponseAgent()
+
+        orchestrator.run(
+            room,
+            "我上傳了一張照片，想請你看看。\n\n使用者這一輪上傳了一張照片。",
+            image_path="/tmp/photo.jpg",
+            safety_text="我上傳了一張照片，想請你看看。",
+        )
+
+        self.assertEqual(captured["image_path"], "/tmp/photo.jpg")
+        self.assertEqual(captured["safety_text"], "我上傳了一張照片，想請你看看。")
 
     def test_chat_api_requires_login(self):
         response = Client().post(
