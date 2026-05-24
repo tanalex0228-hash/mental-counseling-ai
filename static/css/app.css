@@ -106,23 +106,23 @@
 
 .theme-cyberpunk {
   color-scheme: dark;
-  --bg: #05070a;
-  --panel: rgba(18, 22, 29, 0.58);
-  --sidebar: rgba(5, 7, 10, 0.82);
-  --sidebar-text: #f5fbff;
-  --accent: #72f6ff;
-  --accent-strong: #f2fbff;
-  --text: #f5f8fb;
-  --muted: #aeb9c4;
-  --border: rgba(202, 222, 235, 0.2);
-  --assistant: rgba(16, 19, 25, 0.62);
-  --user: rgba(182, 196, 207, 0.18);
-  --bubble-radius: 18px;
-  --bubble-border: 1px solid rgba(230, 240, 250, 0.22);
+  --bg: #020202;
+  --panel: rgba(9, 9, 10, 0.78);
+  --sidebar: rgba(2, 2, 2, 0.94);
+  --sidebar-text: #f5f5ef;
+  --accent: #f2f2ea;
+  --accent-strong: #ffffff;
+  --text: #f3f3ee;
+  --muted: #a7a7a0;
+  --border: rgba(245, 245, 238, 0.31);
+  --assistant: rgba(8, 8, 9, 0.7);
+  --user: rgba(245, 245, 238, 0.13);
+  --bubble-radius: 2px;
+  --bubble-border: 1px solid rgba(245, 245, 238, 0.38);
   --bubble-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 24px 80px rgba(0, 0, 0, 0.38),
-    0 0 28px rgba(114, 246, 255, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 22px 70px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.07);
 }
 
 * {
@@ -139,9 +139,10 @@ body {
 
 .theme-cyberpunk {
   background:
-    radial-gradient(circle at 18% 12%, rgba(114, 246, 255, 0.2), transparent 28%),
-    radial-gradient(circle at 82% 0%, rgba(255, 70, 216, 0.16), transparent 26%),
-    linear-gradient(135deg, #030407 0%, #0d1118 46%, #030407 100%);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0 1px, transparent 1px 74%),
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.18), transparent 20%),
+    radial-gradient(circle at 86% 4%, rgba(210, 210, 204, 0.16), transparent 24%),
+    linear-gradient(135deg, #f1f1ea 0%, #a5a5a0 3%, #050505 3.5%, #010101 100%);
 }
 
 body:has(.app-shell) {
@@ -238,16 +239,62 @@ a {
 }
 
 .theme-cyberpunk .sidebar {
-  border-right: 1px solid rgba(210, 230, 242, 0.18);
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid rgba(244, 244, 241, 0.22);
+  background:
+    linear-gradient(90deg, transparent 0 74%, rgba(255, 255, 255, 0.04) 74% 100%),
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    rgba(2, 2, 2, 0.94);
+  background-size: auto, 28px 28px, auto;
   box-shadow:
-    inset -1px 0 0 rgba(255, 255, 255, 0.1),
-    18px 0 90px rgba(0, 0, 0, 0.38);
-  backdrop-filter: blur(28px) saturate(1.35);
+    inset -1px 0 0 rgba(255, 255, 255, 0.12),
+    18px 0 90px rgba(0, 0, 0, 0.54);
+  backdrop-filter: blur(28px) contrast(1.12);
+}
+
+.theme-cyberpunk .sidebar::before {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 88px;
+  width: 54px;
+  height: 54px;
+  pointer-events: none;
+  clip-path: polygon(50% 0%, 61% 36%, 100% 15%, 69% 50%, 100% 85%, 61% 64%, 50% 100%, 39% 64%, 0% 85%, 31% 50%, 0% 15%, 39% 36%);
+  background: #f9f9f0;
+  opacity: 0.11;
+  filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.3));
+}
+
+.theme-cyberpunk .sidebar::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  bottom: 132px;
+  width: 58px;
+  height: 138px;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.7) 0 1px, transparent 1px 100%),
+    linear-gradient(rgba(255, 255, 255, 0.7) 0 1px, transparent 1px 100%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.22) 25%, transparent 25% 50%, rgba(255, 255, 255, 0.22) 50% 75%, transparent 75%);
+  background-size: 100% 100%, 100% 100%, 14px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  opacity: 0.16;
+}
+
+.theme-cyberpunk .sidebar > * {
+  position: relative;
+  z-index: 1;
 }
 
 .theme-cyberpunk .brand span {
-  color: #f7fbff;
-  text-shadow: 0 0 18px rgba(114, 246, 255, 0.72);
+  color: #fbfbf4;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 18px rgba(255, 255, 255, 0.32),
+    2px 0 0 rgba(255, 255, 255, 0.08);
 }
 
 .theme-cyberpunk .icon-button,
@@ -259,22 +306,34 @@ a {
 .theme-cyberpunk .youtube-controls button,
 .theme-cyberpunk .media-result,
 .theme-cyberpunk .link-result {
-  border: 1px solid rgba(230, 240, 250, 0.2);
-  background: rgba(238, 246, 255, 0.08);
-  color: #f7fbff;
+  border: 1px solid rgba(244, 244, 241, 0.28);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+    rgba(4, 4, 4, 0.72);
+  color: #fbfbf6;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    0 12px 36px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(20px) saturate(1.4);
+    0 12px 36px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(22px) contrast(1.16);
+  border-radius: 3px;
 }
 
 .theme-cyberpunk .conversation-item.active,
 .theme-cyberpunk .conversation-item:hover {
   background:
-    linear-gradient(135deg, rgba(114, 246, 255, 0.18), rgba(255, 255, 255, 0.06));
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    0 0 30px rgba(114, 246, 255, 0.12);
+    0 0 30px rgba(255, 255, 255, 0.08);
+}
+
+.theme-cyberpunk .conversation-item {
+  border-radius: 3px;
+  border: 1px solid transparent;
+}
+
+.theme-cyberpunk .conversation-item.active {
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
 .brand,
@@ -400,25 +459,31 @@ a {
 
 .theme-cyberpunk .chat-panel {
   background:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-    radial-gradient(circle at 16% 22%, rgba(114, 246, 255, 0.18), transparent 32%),
-    radial-gradient(circle at 88% 18%, rgba(255, 70, 216, 0.14), transparent 26%),
-    linear-gradient(145deg, #f1f4f8 0%, #c7ced8 8%, #10141b 9%, #05070a 100%);
-  background-size: 48px 48px, 48px 48px, auto, auto, auto;
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.055) 25%, transparent 25% 50%, rgba(255, 255, 255, 0.055) 50% 75%, transparent 75%),
+    radial-gradient(circle at 15% 18%, rgba(255, 255, 255, 0.13), transparent 28%),
+    radial-gradient(circle at 90% 6%, rgba(170, 170, 164, 0.12), transparent 20%),
+    linear-gradient(145deg, #ededdf 0%, #8e8e88 5%, #080808 5.5%, #020202 100%);
+  background-size: 42px 42px, 42px 42px, 18px 18px, auto, auto, auto;
 }
 
 .theme-cyberpunk .chat-panel::after {
   content: "";
   position: absolute;
-  inset: 0;
+  width: min(38vw, 440px);
+  height: min(38vw, 440px);
+  right: 4vw;
+  top: 9vh;
   z-index: 0;
   pointer-events: none;
+  clip-path: polygon(50% 0%, 58% 37%, 96% 12%, 65% 49%, 100% 50%, 64% 58%, 88% 96%, 51% 67%, 42% 100%, 43% 62%, 4% 88%, 36% 52%, 0% 47%, 36% 42%, 12% 5%, 49% 35%);
   background:
-    linear-gradient(115deg, rgba(255, 255, 255, 0.34), transparent 18%, transparent 72%, rgba(114, 246, 255, 0.12)),
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.15), transparent 45%);
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.46) 18%, transparent 54%),
+    conic-gradient(from 45deg, transparent, rgba(255, 255, 255, 0.7), transparent, rgba(230, 230, 222, 0.66), transparent);
   mix-blend-mode: screen;
-  opacity: 0.62;
+  filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.2));
+  opacity: 0.24;
 }
 
 .chat-header {
@@ -439,24 +504,60 @@ a {
 .theme-cyberpunk .settings-nav,
 .theme-cyberpunk .auth-panel,
 .theme-cyberpunk .visual-preview {
-  border-color: rgba(230, 240, 250, 0.2);
+  border-color: rgba(245, 245, 238, 0.28);
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.045)),
-    rgba(9, 12, 17, 0.62);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent 34%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    rgba(7, 7, 8, 0.72);
+  background-size: auto, 22px 22px, auto;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 22px 80px rgba(0, 0, 0, 0.32),
-    0 0 36px rgba(114, 246, 255, 0.08);
-  backdrop-filter: blur(30px) saturate(1.45);
+    inset 0 1px 0 rgba(255, 255, 255, 0.21),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    0 22px 80px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(28px) contrast(1.16);
+}
+
+.theme-cyberpunk .chat-header,
+.theme-cyberpunk .composer-wrap {
+  position: relative;
+  z-index: 2;
+}
+
+.theme-cyberpunk .chat-header::after {
+  content: "PSY-OS / CARE INTERFACE";
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 11px;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  padding: 5px 8px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    rgba(0, 0, 0, 0.22);
+  background-size: 8px 8px, auto;
+}
+
+.theme-cyberpunk .chat-header p {
+  color: rgba(245, 245, 238, 0.68);
 }
 
 .theme-cyberpunk .chat-header h1,
 .theme-cyberpunk .settings-header h1,
 .theme-cyberpunk .tool-card h2 {
-  color: #f8fbff;
+  color: #fbfbf4;
+  text-transform: uppercase;
   text-shadow:
-    0 0 24px rgba(114, 246, 255, 0.4),
-    0 0 2px rgba(255, 255, 255, 0.6);
+    0 0 24px rgba(255, 255, 255, 0.24),
+    0 0 2px rgba(255, 255, 255, 0.65);
+}
+
+.theme-cyberpunk .tool-card,
+.theme-cyberpunk .settings-form,
+.theme-cyberpunk .settings-nav,
+.theme-cyberpunk .auth-panel,
+.theme-cyberpunk .visual-preview,
+.theme-cyberpunk .companion-panel {
+  border-radius: 4px;
 }
 
 .theme-dark .chat-header,
@@ -522,28 +623,46 @@ a {
 
 .theme-cyberpunk .bubble {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.045)),
-    rgba(13, 16, 23, 0.64);
-  color: #f7fbff;
-  backdrop-filter: blur(26px) saturate(1.45);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent 42%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    rgba(7, 7, 8, 0.76);
+  background-size: auto, 18px 18px, auto;
+  color: #f7f7f1;
+  backdrop-filter: blur(24px) contrast(1.16);
   position: relative;
+  overflow: hidden;
 }
 
 .theme-cyberpunk .message.user .bubble {
   background:
-    linear-gradient(135deg, rgba(114, 246, 255, 0.22), rgba(255, 70, 216, 0.1)),
-    rgba(217, 226, 235, 0.13);
-  border-color: rgba(114, 246, 255, 0.34);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 44%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.08) 25%, transparent 25% 50%, rgba(255, 255, 255, 0.08) 50% 75%, transparent 75%),
+    rgba(235, 235, 224, 0.14);
+  background-size: auto, 12px 12px, auto;
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .theme-cyberpunk .bubble::before {
   content: "";
   position: absolute;
-  inset: 1px;
-  border-radius: inherit;
+  right: 9px;
+  top: 9px;
+  width: 42px;
+  height: 42px;
   pointer-events: none;
-  background: linear-gradient(115deg, rgba(255, 255, 255, 0.22), transparent 28%);
-  opacity: 0.78;
+  clip-path: polygon(50% 0%, 58% 37%, 100% 12%, 65% 50%, 100% 88%, 58% 63%, 50% 100%, 42% 63%, 0% 88%, 35% 50%, 0% 12%, 42% 37%);
+  background: rgba(255, 255, 255, 0.9);
+  opacity: 0.08;
+}
+
+.theme-cyberpunk .bubble::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  pointer-events: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.24);
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  clip-path: polygon(0 0, 32% 0, 32% 1px, 1px 1px, 1px 32%, 0 32%);
 }
 
 .bubble-glass .bubble {
@@ -661,13 +780,15 @@ a {
 .theme-cyberpunk .settings-form select,
 .theme-cyberpunk .auth-form input,
 .theme-cyberpunk .theme-form select {
-  border-color: rgba(230, 240, 250, 0.2);
-  background: rgba(238, 246, 255, 0.08);
-  color: #f7fbff;
+  border-color: rgba(245, 245, 238, 0.3);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 36%),
+    rgba(4, 4, 4, 0.72);
+  color: #f7f7f1;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    0 14px 42px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(22px) saturate(1.35);
+    0 14px 42px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(22px) contrast(1.16);
 }
 
 .theme-cyberpunk .composer button,
@@ -675,11 +796,14 @@ a {
 .theme-cyberpunk .theme-form button,
 .theme-cyberpunk .settings-form button {
   background:
-    linear-gradient(135deg, #f7fbff, #aeb9c4 45%, #72f6ff);
-  color: #05070a;
+    linear-gradient(135deg, #ffffff 0%, #d9d9d1 42%, #777770 43%, #f8f8f0 100%);
+  color: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.72);
   box-shadow:
-    0 0 24px rgba(114, 246, 255, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 0 22px rgba(255, 255, 255, 0.18),
     0 18px 48px rgba(0, 0, 0, 0.28);
+  border-radius: 3px;
 }
 
 .composer button {
@@ -1533,6 +1657,19 @@ a {
 }
 
 @media (max-width: 760px) {
+  .theme-cyberpunk .chat-header::after,
+  .theme-cyberpunk .sidebar::after {
+    display: none;
+  }
+
+  .theme-cyberpunk .chat-panel::after {
+    width: 260px;
+    height: 260px;
+    right: -64px;
+    top: 96px;
+    opacity: 0.16;
+  }
+
   .settings-page {
     padding: 14px;
   }
